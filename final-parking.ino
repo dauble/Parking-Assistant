@@ -22,30 +22,46 @@ void setup() {
 }
 
 void loop() {
-  // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
-  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  digitalWrite(trigPin, LOW);
 
-  delayMicroseconds(5);
-  digitalWrite(trigPin, HIGH);
+   int avg_inches = 0;
+   for(int i = 0; i < 5; i++) {
+    // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
+    // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+    digitalWrite(trigPin, LOW);
 
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+    delayMicroseconds(5);
+    digitalWrite(trigPin, HIGH);
 
-  // Read the signal from the sensor: a HIGH pulse whose
-  // duration is the time (in microseconds) from the sending
-  // of the ping to the reception of its echo off of an object.
-  pinMode(echoPin, INPUT);
-  duration = pulseIn(echoPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
 
-  // convert the time into a distance
-//  cm = (duration/2) / 29.1; // uncomment to use cm
-  inches = (duration/2) / 74; // uncomment to use in
+    // Read the signal from the sensor: a HIGH pulse whose
+    // duration is the time (in microseconds) from the sending
+    // of the ping to the reception of its echo off of an object.
+    // pinMode(echoPin, INPUT);
+    duration = pulseIn(echoPin, HIGH);
+
+    // convert the time into a distance
+    // cm = (duration/2) / 29.1; // uncomment to use cm
+    inches = (duration/2) / 74; // uncomment to use in
+
+    avg_inches += inches;
+    delay(50);
+  }
+
+  int total_avg_inches = avg_inches / 5;
+  // Serial.println(total_avg_inches);
 
   // enable light
   matrix.clear();
   matrix.setBrightness(15);
 
+  DisplayLight(total_avg_inches);
+
+  delay(250);
+}
+
+void DisplayLight(int inches) {
   if(inches <= 24) {
     // to do: keep count, flash for 10s then shut down
 
@@ -83,6 +99,4 @@ void loop() {
     matrix.clear();
     matrix.writeDisplay();
   }
-
-  delay(250);
 }
